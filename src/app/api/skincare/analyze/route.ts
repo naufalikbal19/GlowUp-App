@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { randomUUID } from "crypto";
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 import { db } from "@/lib/db";
 import { getActiveProfile } from "@/lib/profile";
 import { analyzePhotoWithAI, isAIAnalysisAvailable } from "@/lib/ai/analyzeImage";
+import { uploadPhoto } from "@/lib/storage";
 import { toJsonInput } from "@/lib/json";
 import {
   buildSkincareRoutine,
@@ -64,12 +63,9 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await photo.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    await mkdir(uploadsDir, { recursive: true });
     const ext = mediaType.split("/")[1];
-    const filename = `${randomUUID()}.${ext}`;
-    await writeFile(path.join(uploadsDir, filename), buffer);
-    photoUrl = `/uploads/${filename}`;
+    const filename = `skincare/${randomUUID()}.${ext}`;
+    photoUrl = await uploadPhoto(buffer, filename, mediaType);
 
     const aiResult = await analyzePhotoWithAI("SKIN", buffer.toString("base64"), mediaType);
 

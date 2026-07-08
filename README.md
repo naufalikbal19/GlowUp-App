@@ -10,7 +10,8 @@ Aplikasi web yang memberi arahan personal untuk transformasi diri lewat 4 modul:
 ## Tech stack
 
 - Next.js (App Router) + TypeScript + Tailwind CSS
-- Prisma + SQLite (`better-sqlite3` driver adapter) — database lokal, tidak perlu setup cloud
+- Prisma + Supabase Postgres (`@prisma/adapter-pg`) — database cloud, supaya data bisa diakses dari perangkat manapun (dan kompatibel dengan hosting serverless seperti Vercel)
+- Supabase Storage untuk menyimpan foto yang diupload di Skincare & Bodycare
 - Anthropic Claude API (opsional) untuk analisa foto skincare/bodycare, dengan fallback rule-based questionnaire kalau API key belum diset
 - Recharts untuk grafik progress
 
@@ -18,16 +19,29 @@ Aplikasi web yang memberi arahan personal untuk transformasi diri lewat 4 modul:
 
 ```bash
 npm install
-cp .env.example .env   # sudah ada default DATABASE_URL, tinggal isi ANTHROPIC_API_KEY jika mau AI aktif
-npx prisma migrate dev # sekali saja, membuat dev.db
+cp .env.example .env   # isi DATABASE_URL, SUPABASE_URL, SUPABASE_ANON_KEY (dari dashboard Supabase project), dan ANTHROPIC_API_KEY jika mau AI aktif
+npx prisma migrate deploy # sekali saja, menerapkan skema ke database Supabase
 npm run dev
 ```
 
 Buka [http://localhost:3000](http://localhost:3000).
 
+### Setup Supabase
+
+1. Buat project di [supabase.com](https://supabase.com) (atau pakai project yang sudah dibuatkan).
+2. `DATABASE_URL` — Settings → Database → Connection string, pakai mode **Transaction pooler** (port 6543) supaya cocok untuk serverless.
+3. `SUPABASE_URL` & `SUPABASE_ANON_KEY` — Settings → API.
+4. Storage bucket bernama `uploads` (public) sudah harus ada — dipakai untuk menyimpan foto skincare/bodycare.
+
 ### Mengaktifkan analisa foto AI (opsional)
 
 Tanpa `ANTHROPIC_API_KEY`, fitur upload foto di Skincare & Bodycare tetap berfungsi tapi rekomendasinya dibuat dari kuisioner (jenis kulit + keluhan yang kamu pilih). Untuk analisa AI berbasis foto sungguhan, isi `ANTHROPIC_API_KEY` di `.env` dengan API key dari [console.anthropic.com](https://console.anthropic.com).
+
+## Deploy ke Vercel
+
+1. Import repo ini di [vercel.com](https://vercel.com) (New Project → pilih repo GitHub ini).
+2. Tambahkan environment variables di Vercel: `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, dan opsional `ANTHROPIC_API_KEY`.
+3. Deploy. Setelah live, aplikasi bisa diakses dari device manapun (termasuk HP) dengan data yang sama karena database-nya di cloud (Supabase), bukan lokal.
 
 ## Struktur proyek
 
