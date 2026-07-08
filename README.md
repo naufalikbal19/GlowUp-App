@@ -37,10 +37,10 @@ Buka [http://localhost:3000](http://localhost:3000).
 
 Tanpa `ANTHROPIC_API_KEY`, fitur upload foto di Skincare & Bodycare tetap berfungsi tapi rekomendasinya dibuat dari kuisioner (jenis kulit + keluhan yang kamu pilih). Untuk analisa AI berbasis foto sungguhan, isi `ANTHROPIC_API_KEY` di `.env` dengan API key dari [console.anthropic.com](https://console.anthropic.com).
 
-## Deploy ke Vercel
+## Deploy ke Netlify
 
-1. Import repo ini di [vercel.com](https://vercel.com) (New Project → pilih repo GitHub ini).
-2. Tambahkan environment variables di Vercel: `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, dan opsional `ANTHROPIC_API_KEY`.
+1. Import repo ini di [app.netlify.com](https://app.netlify.com) (Add new site → Import an existing project → pilih repo GitHub ini). `netlify.toml` di root project sudah mengonfigurasi build command dan plugin Next.js-nya.
+2. Tambahkan environment variables di Netlify (Site configuration → Environment variables): `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, dan opsional `ANTHROPIC_API_KEY`.
 3. Deploy. Setelah live, aplikasi bisa diakses dari device manapun (termasuk HP) dengan data yang sama karena database-nya di cloud (Supabase), bukan lokal.
 
 ## Struktur proyek
