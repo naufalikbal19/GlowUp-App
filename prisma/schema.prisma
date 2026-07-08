@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum ActivityLevel {
+  SEDENTARY
+  LIGHT
+  MODERATE
+  ACTIVE
+  VERY_ACTIVE
+}
+
+enum Goal {
+  LOSE_FAT
+  MAINTAIN
+  GAIN_MUSCLE
+}
+
+enum TrainingLocation {
+  GYM
+  HOME
+}
+
+model Profile {
+  id               String           @id @default(cuid())
+  name             String
+  gender           Gender
+  age              Int
+  heightCm         Float
+  weightKg         Float
+  activityLevel    ActivityLevel
+  goal             Goal
+  trainingLocation TrainingLocation @default(GYM)
+  daysPerWeek      Int              @default(4)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  gymPrograms  GymProgram[]
+  bodyLogs     BodyLog[]
+  skinAnalyses SkinAnalysis[]
+  bodyAnalyses BodyAnalysis[]
+  hairRoutines HairRoutine[]
+}
+
+model GymProgram {
+  id            String   @id @default(cuid())
+  profileId     String
+  profile       Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  period        String
+  startDate     DateTime @default(now())
+  bmi           Float
+  bmr           Float
+  tdee          Float
+  calorieTarget Float
+  proteinG      Float
+  carbsG        Float
+  fatG          Float
+  ifSchedule    Json
+  schedule      Json
+  mealPlan      Json
+  createdAt     DateTime @default(now())
+
+  @@index([profileId])
+}
+
+model BodyLog {
+  id           String   @id @default(cuid())
+  profileId    String
+  profile      Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  date         DateTime @default(now())
+  weightKg     Float
+  bodyFatPct   Float?
+  muscleMassKg Float?
+  waistCm      Float?
+  chestCm      Float?
+  hipCm        Float?
+  armCm        Float?
+  thighCm      Float?
+  notes        String?
+  createdAt    DateTime @default(now())
+
+  @@index([profileId])
+}
+
+model SkinAnalysis {
+  id        String   @id @default(cuid())
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  source    String
+  photoUrl  String?
+  skinType  String
+  concerns  Json
+  severity  Json
+  summary   String
+  routine   Json
+  createdAt DateTime @default(now())
+
+  @@index([profileId])
+}
+
+model BodyAnalysis {
+  id        String   @id @default(cuid())
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  source    String
+  photoUrl  String?
+  skinType  String
+  concerns  Json
+  severity  Json
+  summary   String
+  routine   Json
+  createdAt DateTime @default(now())
+
+  @@index([profileId])
+}
+
+model HairRoutine {
+  id        String   @id @default(cuid())
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  hairType  String
+  scalpType String
+  concerns  Json
+  summary   String
+  routine   Json
+  createdAt DateTime @default(now())
+
+  @@index([profileId])
+}
